@@ -474,7 +474,7 @@ export default function App() {
     setSubmitting(true);
     try {
       // TEMPLATE PLACEHOLDER — replace with the salon's real business email before launch.
-      const OWNER_EMAIL = "info@friseur-danyar.de";
+      const OWNER_EMAIL = "simalsarf031@gmail.com";
       const SALON_ADDRESS = "Vahrenwalder Str. 140, 30165 Hannover";
 
       // Fill the customer confirmation email with this booking's details.
