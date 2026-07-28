@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import emailjs from "@emailjs/browser";
 import {
   Scissors, Palette, Wind, User, Sparkles, Heart, Baby, Star,
   Phone, MapPin, Clock, ChevronLeft, ChevronRight, Menu, X,
@@ -409,6 +410,12 @@ const SOCIAL = {
 // TEMPLATE PLACEHOLDER — swap for the salon's real WhatsApp number before launch.
 const WHATSAPP_NUMBER = "4917642907828"; // international format, no "+" or leading zero
 
+// EmailJS config — sends the owner notification + customer confirmation emails.
+const EMAILJS_SERVICE_ID = "service_lqcx5rb";
+const EMAILJS_OWNER_TEMPLATE_ID = "template_7sq2g2k";
+const EMAILJS_CUSTOMER_TEMPLATE_ID = "template_ryflegn";
+const EMAILJS_PUBLIC_KEY = "rvK0cwV5a_4Mi8mvR";
+
 /* ── Helpers ────────────────────────────────────────────────────────────────── */
 function WhatsAppIcon({ className = "w-7 h-7" }: { className?: string }) {
   return (
@@ -454,7 +461,6 @@ export default function App() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
-  const hiddenFormRef = useRef<HTMLFormElement>(null);
 
   const t = T[lang];
   const isRTL = LANGS[lang].dir === "rtl";
@@ -482,20 +488,47 @@ export default function App() {
     .replace("{time}", form.time || "-")
     .replace("{address}", SALON_ADDRESS);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    // IMPORTANT: FormSubmit.co's docs state autoresponse "won't work with forms
-    // that are submitting through AJAX" — so instead of fetch(), we submit a real
-    // <form> POST into a hidden iframe. This sends the owner their notification
-    // AND triggers FormSubmit's autoresponse (the customer confirmation email),
-    // while keeping the page from navigating away, same as before.
-    hiddenFormRef.current?.submit();
-    setTimeout(() => {
+    try {
+      // Two separate EmailJS sends: one notifies the owner, one confirms the
+      // booking to the customer — each using its own template and recipient.
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_OWNER_TEMPLATE_ID,
+        {
+          subject: `${t.booking.ownerSubjectPrefix} ${form.name}`,
+          owner_email: OWNER_EMAIL,
+          customer_name: form.name,
+          customer_phone: form.phone,
+          customer_email: form.email,
+          service: form.service,
+          stylist: form.stylist,
+          date: form.date,
+          time: form.time,
+          message: form.message,
+        },
+        { publicKey: EMAILJS_PUBLIC_KEY }
+      );
+
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_CUSTOMER_TEMPLATE_ID,
+        {
+          subject: t.booking.custSubject,
+          customer_email: form.email,
+          body: custBody,
+        },
+        { publicKey: EMAILJS_PUBLIC_KEY }
+      );
+    } catch (err) {
+      console.error("Booking email failed:", err);
+    } finally {
       setSubmitting(false);
       setSubmitted(true);
       setForm(EMPTY_FORM);
-    }, 900);
+    }
   };
 
   const navLinks = [
@@ -1150,31 +1183,6 @@ export default function App() {
                   </motion.form>
                 )}
               </AnimatePresence>
-
-              {/* Hidden real form + iframe: submits a genuine (non-AJAX) POST to
-                  FormSubmit so the customer autoresponse confirmation email fires.
-                  Invisible to the visitor — the page never navigates away. */}
-              <iframe name="formsubmit_target" style={{ display: "none" }} title="form-submit-target" />
-              <form
-                ref={hiddenFormRef}
-                action={`https://formsubmit.co/${OWNER_EMAIL}`}
-                method="POST"
-                target="formsubmit_target"
-                style={{ display: "none" }}
-              >
-                <input type="hidden" name="_subject" value={`${t.booking.ownerSubjectPrefix} ${form.name}`} />
-                <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="_autoresponse" value={custBody} />
-                <input type="hidden" name="_replyto" value={form.email} />
-                <input type="hidden" name="Name" value={form.name} />
-                <input type="hidden" name="Phone" value={form.phone} />
-                <input type="hidden" name="email" value={form.email} />
-                <input type="hidden" name="Service" value={form.service} />
-                <input type="hidden" name="Stylist" value={form.stylist} />
-                <input type="hidden" name="Date" value={form.date} />
-                <input type="hidden" name="Time" value={form.time} />
-                <input type="hidden" name="Message" value={form.message} />
-              </form>
             </motion.div>
           </div>
         </div>
