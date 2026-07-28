@@ -454,9 +454,14 @@ export default function App() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const hiddenFormRef = useRef<HTMLFormElement>(null);
 
   const t = T[lang];
   const isRTL = LANGS[lang].dir === "rtl";
+
+  // TEMPLATE PLACEHOLDER — replace with the salon's real business email before launch.
+  const OWNER_EMAIL = "simalsarf031@gmail.com";
+  const SALON_ADDRESS = "Vahrenwalder Str. 140, 30165 Hannover";
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -469,43 +474,28 @@ export default function App() {
   const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Fill the customer confirmation email with this booking's details.
+  const custBody = t.booking.custBody
+    .replace("{name}", form.name)
+    .replace("{service}", form.service || "-")
+    .replace("{date}", form.date || "-")
+    .replace("{time}", form.time || "-")
+    .replace("{address}", SALON_ADDRESS);
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    try {
-      // TEMPLATE PLACEHOLDER — replace with the salon's real business email before launch.
-      const OWNER_EMAIL = "simalsarf031@gmail.com";
-      const SALON_ADDRESS = "Vahrenwalder Str. 140, 30165 Hannover";
-
-      // Fill the customer confirmation email with this booking's details.
-      const custBody = t.booking.custBody
-        .replace("{name}", form.name)
-        .replace("{service}", form.service || "-")
-        .replace("{date}", form.date || "-")
-        .replace("{time}", form.time || "-")
-        .replace("{address}", SALON_ADDRESS);
-
-      // FormSubmit.co sends the notification below to the salon owner (OWNER_EMAIL),
-      // and — via the _autoresponse field — automatically sends a separate
-      // confirmation email back to the customer's address (form.email).
-      await fetch(`https://formsubmit.co/ajax/${OWNER_EMAIL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          _subject: `${t.booking.ownerSubjectPrefix} ${form.name}`,
-          _template: "table",
-          _replyto: form.email,
-          _autoresponse: custBody,
-          Name: form.name, Phone: form.phone, Email: form.email,
-          Service: form.service, Stylist: form.stylist,
-          Date: form.date, Time: form.time, Message: form.message,
-        }),
-      });
-    } finally {
+    // IMPORTANT: FormSubmit.co's docs state autoresponse "won't work with forms
+    // that are submitting through AJAX" — so instead of fetch(), we submit a real
+    // <form> POST into a hidden iframe. This sends the owner their notification
+    // AND triggers FormSubmit's autoresponse (the customer confirmation email),
+    // while keeping the page from navigating away, same as before.
+    hiddenFormRef.current?.submit();
+    setTimeout(() => {
       setSubmitting(false);
       setSubmitted(true);
       setForm(EMPTY_FORM);
-    }
+    }, 900);
   };
 
   const navLinks = [
@@ -1160,12 +1150,35 @@ export default function App() {
                   </motion.form>
                 )}
               </AnimatePresence>
+
+              {/* Hidden real form + iframe: submits a genuine (non-AJAX) POST to
+                  FormSubmit so the customer autoresponse confirmation email fires.
+                  Invisible to the visitor — the page never navigates away. */}
+              <iframe name="formsubmit_target" style={{ display: "none" }} title="form-submit-target" />
+              <form
+                ref={hiddenFormRef}
+                action={`https://formsubmit.co/${OWNER_EMAIL}`}
+                method="POST"
+                target="formsubmit_target"
+                style={{ display: "none" }}
+              >
+                <input type="hidden" name="_subject" value={`${t.booking.ownerSubjectPrefix} ${form.name}`} />
+                <input type="hidden" name="_template" value="table" />
+                <input type="hidden" name="_autoresponse" value={custBody} />
+                <input type="hidden" name="_replyto" value={form.email} />
+                <input type="hidden" name="Name" value={form.name} />
+                <input type="hidden" name="Phone" value={form.phone} />
+                <input type="hidden" name="email" value={form.email} />
+                <input type="hidden" name="Service" value={form.service} />
+                <input type="hidden" name="Stylist" value={form.stylist} />
+                <input type="hidden" name="Date" value={form.date} />
+                <input type="hidden" name="Time" value={form.time} />
+                <input type="hidden" name="Message" value={form.message} />
+              </form>
             </motion.div>
           </div>
         </div>
       </section>
-
-      {/* ── Location ────────────────────────────────────────────────────────── */}
       <section id="contact" className="py-28 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fadeUp()} className="text-center mb-16">
