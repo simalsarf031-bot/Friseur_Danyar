@@ -94,6 +94,9 @@ const T = {
       submitBtn: "Book Appointment", successTitle: "Booking Request Sent!",
       successMsg: "Thank you! We will confirm your appointment within 24 hours.",
       ph_name: "Your full name", ph_phone: "+49 ...", ph_email: "you@example.com", ph_msg: "Any special requests or notes...",
+      ownerSubjectPrefix: "New Appointment Request —",
+      custSubject: "Your Appointment Confirmation — Friseur Danyar",
+      custBody: "Hi {name},\n\nThank you for booking with Friseur Danyar! Here are your appointment details:\n\nService: {service}\nDate: {date}\nTime: {time}\nAddress: {address}\n\nWe look forward to seeing you!\n\nBest regards,\nFriseur Danyar",
     },
     loc: {
       inside: "Located inside MARKTKAUF Hannover", hours: "Opening Hours",
@@ -110,6 +113,7 @@ const T = {
       viewIG: "View on Instagram", followIG: "Follow us @friseur_danyar",
       bookSvc: "Book This Service", exp: "yrs experience", close: "Close",
       reviewsGoogle: "Reviews on Google",
+      waLabel: "Chat on WhatsApp", waMsg: "Hi! I'd like to book an appointment at Friseur Danyar.",
     },
   },
   de: {
@@ -170,6 +174,9 @@ const T = {
       submitBtn: "Termin buchen", successTitle: "Terminanfrage gesendet!",
       successMsg: "Vielen Dank! Wir bestätigen Ihren Termin innerhalb von 24 Stunden.",
       ph_name: "Vollständiger Name", ph_phone: "+49 ...", ph_email: "sie@beispiel.de", ph_msg: "Besondere Wünsche oder Anmerkungen...",
+      ownerSubjectPrefix: "Neue Terminanfrage —",
+      custSubject: "Ihre Terminbestätigung — Friseur Danyar",
+      custBody: "Hallo {name},\n\nvielen Dank für Ihre Buchung bei Friseur Danyar! Hier sind Ihre Termindetails:\n\nLeistung: {service}\nDatum: {date}\nUhrzeit: {time}\nAdresse: {address}\n\nWir freuen uns auf Ihren Besuch!\n\nMit freundlichen Grüßen,\nFriseur Danyar",
     },
     loc: {
       inside: "Im MARKTKAUF Hannover", hours: "Öffnungszeiten",
@@ -186,6 +193,7 @@ const T = {
       viewIG: "Auf Instagram ansehen", followIG: "Folgen Sie @friseur_danyar",
       bookSvc: "Diesen Service buchen", exp: "Jahre Erfahrung", close: "Schließen",
       reviewsGoogle: "Bewertungen auf Google",
+      waLabel: "Über WhatsApp chatten", waMsg: "Hallo! Ich möchte gerne einen Termin bei Friseur Danyar buchen.",
     },
   },
   ar: {
@@ -246,6 +254,9 @@ const T = {
       submitBtn: "احجز موعداً", successTitle: "تم إرسال طلب الحجز!",
       successMsg: "شكراً! سنؤكد موعدك خلال 24 ساعة.",
       ph_name: "الاسم الكامل", ph_phone: "+49 ...", ph_email: "بريدك@مثال.com", ph_msg: "أي طلبات خاصة أو ملاحظات...",
+      ownerSubjectPrefix: "طلب حجز جديد —",
+      custSubject: "تأكيد حجزك — صالون دانيار",
+      custBody: "مرحباً {name}،\n\nشكراً لحجزك مع صالون دانيار! إليك تفاصيل موعدك:\n\nالخدمة: {service}\nالتاريخ: {date}\nالوقت: {time}\nالعنوان: {address}\n\nنتطلع لرؤيتك!\n\nمع تحيات فريق صالون دانيار",
     },
     loc: {
       inside: "داخل ماركتكاوف هانوفر", hours: "ساعات العمل",
@@ -262,6 +273,7 @@ const T = {
       viewIG: "عرض على إنستغرام", followIG: "تابعنا @friseur_danyar",
       bookSvc: "احجز هذه الخدمة", exp: "سنوات خبرة", close: "إغلاق",
       reviewsGoogle: "تقييمات على جوجل",
+      waLabel: "الدردشة عبر واتساب", waMsg: "مرحباً! أرغب في حجز موعد في صالون دانيار.",
     },
   },
   tr: {
@@ -322,6 +334,9 @@ const T = {
       submitBtn: "Randevu Al", successTitle: "Rezervasyon Talebiniz Gönderildi!",
       successMsg: "Teşekkürler! Randevunuzu 24 saat içinde onaylayacağız.",
       ph_name: "Tam adınız", ph_phone: "+49 ...", ph_email: "siz@ornek.com", ph_msg: "Özel istekler veya notlar...",
+      ownerSubjectPrefix: "Yeni Randevu Talebi —",
+      custSubject: "Randevu Onayınız — Friseur Danyar",
+      custBody: "Merhaba {name},\n\nFriseur Danyar'dan rezervasyon yaptığınız için teşekkür ederiz! Randevu detaylarınız:\n\nHizmet: {service}\nTarih: {date}\nSaat: {time}\nAdres: {address}\n\nSizi görmek için sabırsızlanıyoruz!\n\nSaygılarımızla,\nFriseur Danyar",
     },
     loc: {
       inside: "MARKTKAUF Hannover içinde", hours: "Çalışma Saatleri",
@@ -338,6 +353,7 @@ const T = {
       viewIG: "Instagram'da Görüntüle", followIG: "@friseur_danyar Takip Et",
       bookSvc: "Bu Hizmeti Rezerve Et", exp: "yıl deneyim", close: "Kapat",
       reviewsGoogle: "Google Değerlendirmesi",
+      waLabel: "WhatsApp'tan Yazın", waMsg: "Merhaba! Friseur Danyar'da randevu almak istiyorum.",
     },
   },
 };
@@ -390,7 +406,18 @@ const SOCIAL = {
   facebook:  "https://www.facebook.com/share/1Bbpbzw17r/?mibextid=wwXIfr",
 };
 
+// TEMPLATE PLACEHOLDER — swap for the salon's real WhatsApp number before launch.
+const WHATSAPP_NUMBER = "4917642907828"; // international format, no "+" or leading zero
+
 /* ── Helpers ────────────────────────────────────────────────────────────────── */
+function WhatsAppIcon({ className = "w-7 h-7" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={className} fill="currentColor" aria-hidden="true">
+      <path d="M16.004 3C9.376 3 4 8.373 4 15c0 2.34.65 4.526 1.78 6.394L4 29l7.79-1.746A11.93 11.93 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm0 21.75c-2.014 0-3.89-.59-5.47-1.606l-.392-.247-4.62 1.036 1.06-4.51-.256-.406A9.71 9.71 0 0 1 5.25 15c0-5.937 4.817-10.75 10.754-10.75S26.75 9.063 26.75 15 21.937 24.75 16.004 24.75Zm5.918-8.146c-.324-.163-1.917-.946-2.214-1.054-.297-.108-.513-.163-.729.162-.216.325-.837 1.054-1.026 1.271-.19.216-.378.244-.702.081-.324-.163-1.368-.504-2.605-1.606-.963-.86-1.614-1.921-1.803-2.246-.19-.325-.02-.5.143-.663.147-.146.324-.379.486-.569.163-.19.216-.325.324-.542.108-.216.054-.406-.027-.569-.081-.163-.729-1.757-.999-2.406-.263-.632-.53-.546-.729-.556l-.621-.011c-.216 0-.567.081-.864.406-.297.325-1.134 1.108-1.134 2.702s1.161 3.133 1.323 3.35c.163.216 2.286 3.489 5.538 4.895.774.334 1.377.534 1.847.684.776.247 1.483.212 2.042.129.623-.093 1.917-.783 2.187-1.54.27-.756.27-1.404.19-1.54-.081-.135-.297-.216-.622-.379Z" />
+    </svg>
+  );
+}
+
 function StarRow({ count = 5, size = "sm" }: { count?: number; size?: "sm" | "xs" }) {
   const cls = size === "xs" ? "w-3 h-3" : "w-4 h-4";
   return (
@@ -446,14 +473,29 @@ export default function App() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      // FormSubmit.co sends email to simalsarf031@gmail.com
-      // First submission triggers a one-time activation email to that address
-      await fetch("https://formsubmit.co/ajax/simalsarf031@gmail.com", {
+      // TEMPLATE PLACEHOLDER — replace with the salon's real business email before launch.
+      const OWNER_EMAIL = "info@friseur-danyar.de";
+      const SALON_ADDRESS = "Vahrenwalder Str. 140, 30165 Hannover";
+
+      // Fill the customer confirmation email with this booking's details.
+      const custBody = t.booking.custBody
+        .replace("{name}", form.name)
+        .replace("{service}", form.service || "-")
+        .replace("{date}", form.date || "-")
+        .replace("{time}", form.time || "-")
+        .replace("{address}", SALON_ADDRESS);
+
+      // FormSubmit.co sends the notification below to the salon owner (OWNER_EMAIL),
+      // and — via the _autoresponse field — automatically sends a separate
+      // confirmation email back to the customer's address (form.email).
+      await fetch(`https://formsubmit.co/ajax/${OWNER_EMAIL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          _subject: "New Appointment Request — Friseur Danyar",
+          _subject: `${t.booking.ownerSubjectPrefix} ${form.name}`,
           _template: "table",
+          _replyto: form.email,
+          _autoresponse: custBody,
           Name: form.name, Phone: form.phone, Email: form.email,
           Service: form.service, Stylist: form.stylist,
           Date: form.date, Time: form.time, Message: form.message,
@@ -1290,6 +1332,18 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Floating WhatsApp button — opens a chat pre-filled with a booking message */}
+      <a
+        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t.misc.waMsg)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t.misc.waLabel}
+        title={t.misc.waLabel}
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 hover:scale-105 active:scale-95 transition-transform"
+      >
+        <WhatsAppIcon className="w-7 h-7" />
+      </a>
 
     </div>
   );
